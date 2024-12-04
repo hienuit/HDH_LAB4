@@ -60,29 +60,29 @@ void printProcess(int n, PCB P[]) {
 void exportGanttChart(int n, PCB P[]) {
     printf("\nGantt Chart:\n");
 
-    // Dòng khung tiến trình với dấu "="
+ 
     for (int i = 0; i < iGanttIndex; i++) {
         printf("|");
-        int burstWidth = GanttChart[i].end - GanttChart[i].start; // Độ dài khung = thời gian thực thi
+        int burstWidth = GanttChart[i].end - GanttChart[i].start; 
         for (int j = 0; j < burstWidth; j++) {
             printf("=");
         }
     }
     printf("|\n");
 
-    // Hiển thị tên tiến trình, căn giữa đoạn khung
+
     for (int i = 0; i < iGanttIndex; i++) {
         int burstWidth = GanttChart[i].end - GanttChart[i].start;
-        int padding = burstWidth - 2; // Chừa khoảng trống
+        int padding = burstWidth - 2; 
         printf("| P%-*d", padding, GanttChart[i].iPID);
     }
     printf("|\n");
 
-    // Hiển thị thời gian bên dưới
-    printf("%-2d", GanttChart[0].start); // Thời gian bắt đầu
+
+    printf("%-2d", GanttChart[0].start); 
     for (int i = 0; i < iGanttIndex; i++) {
         int burstWidth = GanttChart[i].end - GanttChart[i].start;
-        printf("%*d  ", burstWidth, GanttChart[i].end); // Thời gian kết thúc căn thẳng
+        printf("%*d  ", burstWidth, GanttChart[i].end); 
     }
     printf("\n");
 }
@@ -110,7 +110,7 @@ int getNextProcess(int currentTime, int n, PCB P[]) {
     int minBurst = INT_MAX;
 
     for (int i = 0; i < n; i++) {
-        if (P[i].iArrival <= currentTime && P[i].iBurst > 0) { // Tiến trình sẵn sàng
+        if (P[i].iArrival <= currentTime && P[i].iBurst > 0) { 
             if (P[i].iBurst < minBurst || 
                 (P[i].iBurst == minBurst && P[i].iArrival < P[shortestIndex].iArrival)) {
                 shortestIndex = i;
@@ -121,7 +121,7 @@ int getNextProcess(int currentTime, int n, PCB P[]) {
     return shortestIndex;
 }
 
-// Thuật toán SJF (Preemptive)
+
 void sjfPreemptive(int n, PCB P[]) {
     int completed = 0;
     int currentTime = 0;
@@ -130,13 +130,12 @@ void sjfPreemptive(int n, PCB P[]) {
     while (completed < n) {
         int index = getNextProcess(currentTime, n, P);
 
-        if (index == -1) { // Không có tiến trình sẵn sàng
+        if (index == -1) { 
             currentTime++;
             continue;
         }
 
         if (previousPID != P[index].iPID) {
-            // Gantt Chart
             if (previousPID != -1 && iGanttIndex > 0) {
                 GanttChart[iGanttIndex - 1].end = currentTime;
             }
@@ -145,18 +144,18 @@ void sjfPreemptive(int n, PCB P[]) {
             iGanttIndex++;
         }
 
-        if (P[index].iResponse == -1) { // Chỉ tính thời gian phản hồi lần đầu
+        if (P[index].iResponse == -1) { 
             P[index].iResponse = currentTime - P[index].iArrival;
         }
 
-        if (P[index].iStart == -1) { // Ghi nhận thời gian bắt đầu
+        if (P[index].iStart == -1) { 
             P[index].iStart = currentTime;
         }
 
-        P[index].iBurst--; // Thực thi tiến trình
+        P[index].iBurst--; 
         currentTime++;
 
-        if (P[index].iBurst == 0) { // Tiến trình hoàn thành
+        if (P[index].iBurst == 0) { 
             P[index].iFinish = currentTime;
             P[index].iTaT = P[index].iFinish - P[index].iArrival;
             P[index].iWaiting = P[index].iTaT - P[index].iOriginalBurst;
@@ -166,13 +165,13 @@ void sjfPreemptive(int n, PCB P[]) {
         previousPID = P[index].iPID;
     }
 
-    // Cập nhật Gantt Chart lần cuối
+
     if (iGanttIndex > 0) {
         GanttChart[iGanttIndex - 1].end = currentTime;
     }
 }
 
-// Hàm chính
+
 int main() {
     PCB Input[MAX_PROCESS];
     int iNumberOfProcess;
